@@ -24,7 +24,7 @@ public class Pacman extends Entity {
             case 'L': textureId = texLeft;  break;
             case 'R': textureId = texRight; break;
         }
-        System.out.println("Pacman texture: " + textureId);
+//        System.out.println("Pacman texture: " + textureId);
 
     }
 }

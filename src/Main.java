@@ -24,6 +24,7 @@ public class Main {
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
 
+
         // Animator to drive the display() loop
         Animator animator = new Animator(canvas);
         animator.start();

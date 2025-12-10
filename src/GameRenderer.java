@@ -1,3 +1,5 @@
+import com.sun.opengl.util.GLUT;
+
 import javax.media.opengl.*;
 import javax.media.opengl.glu.GLU;
 import java.awt.event.ActionEvent;
@@ -23,6 +25,7 @@ public class GameRenderer implements GLEventListener, ActionListener {
     private final char[] directions = {'U','D','L','R'};
     private final Random random = new Random();
     private int lives = 3;
+    private GLUT glut = new GLUT();
 
 
     public GameRenderer(TextureManager tm) {
@@ -85,6 +88,16 @@ public class GameRenderer implements GLEventListener, ActionListener {
             gl.glBindTexture(GL.GL_TEXTURE_2D, tm.getHeartTex());
             drawQuad(gl, x, y, 25, 25);
             x += 30; // spacing
+
+            gl.glDisable(GL.GL_TEXTURE_2D); // disable textures for text
+//            gl.glColor3f(1.0f, 1.0f, 0.0f); // yellow text
+            gl.glRasterPos2i(10, 20);       // position near top-left
+
+            String scoreText = "Score: " + score;
+            for (char c : scoreText.toCharArray()) {
+                glut.glutBitmapCharacter(GLUT.BITMAP_HELVETICA_18, c);
+            }
+            gl.glEnable(GL.GL_TEXTURE_2D);
         }
     }
     private void drawQuad(GL gl, int x, int y, int w, int h) {
