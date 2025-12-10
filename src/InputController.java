@@ -10,11 +10,15 @@ public class InputController extends KeyAdapter {
 
     @Override
     public void keyReleased(KeyEvent e) {
-        switch (e.getKeyCode()) {
-            case KeyEvent.VK_UP:    renderer.onDirection('U'); break;
-            case KeyEvent.VK_DOWN:  renderer.onDirection('D'); break;
-            case KeyEvent.VK_LEFT:  renderer.onDirection('L'); break;
-            case KeyEvent.VK_RIGHT: renderer.onDirection('R'); break;
-        }
-    }
+        int key = e.getKeyCode();
+
+        if (key == KeyEvent.VK_UP) {
+            renderer.onDirection('U');
+        } else if (key == KeyEvent.VK_DOWN) {
+            renderer.onDirection('D');
+        } else if (key == KeyEvent.VK_LEFT) {
+            renderer.onDirection('L');
+        } else if (key == KeyEvent.VK_RIGHT) {
+            renderer.onDirection('R');
+        }    }
 }

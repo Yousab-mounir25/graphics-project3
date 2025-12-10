@@ -5,6 +5,10 @@ import java.awt.event.ActionListener;
 import java.util.List;
 import java.util.Random;
 
+import java.awt.Font;
+
+
+
 public class GameRenderer implements GLEventListener, ActionListener {
     private final int rows = 21, cols = 19, tileSize = 32;
     private final int boardWidth = cols * tileSize;
@@ -15,9 +19,11 @@ public class GameRenderer implements GLEventListener, ActionListener {
     private GLU glu = new GLU();
     private javax.swing.Timer gameLoop;
     private boolean gameOver = false;
-    private int score = 0, lives = 3;
+    private int score = 0;
     private final char[] directions = {'U','D','L','R'};
     private final Random random = new Random();
+    private int lives = 3;
+
 
     public GameRenderer(TextureManager tm) {
         this.tm = tm;
@@ -67,9 +73,30 @@ public class GameRenderer implements GLEventListener, ActionListener {
 
         // Draw pacman
         if (map.pacman != null) drawEntity(gl, map.pacman);
+        //draw heart
+        drawHUD(gl);
 
-        // HUD (optional): draw simple quads or use bitmap text if desired
     }
+    //draw heart
+    private void drawHUD(GL gl) {
+        int x = 10;
+        int y = boardHeight - 30; // top-left
+        for (int i = 0; i < lives; i++) {
+            gl.glBindTexture(GL.GL_TEXTURE_2D, tm.getHeartTex());
+            drawQuad(gl, x, y, 25, 25);
+            x += 30; // spacing
+        }
+    }
+    private void drawQuad(GL gl, int x, int y, int w, int h) {
+        gl.glBegin(GL.GL_QUADS);
+        gl.glTexCoord2f(0, 0); gl.glVertex2f(x, y);
+        gl.glTexCoord2f(1, 0); gl.glVertex2f(x + w, y);
+        gl.glTexCoord2f(1, 1); gl.glVertex2f(x + w, y + h);
+        gl.glTexCoord2f(0, 1); gl.glVertex2f(x, y + h);
+        gl.glEnd();
+    }
+
+
 
     private void drawEntity(GL gl, Entity e) {
         gl.glBindTexture(GL.GL_TEXTURE_2D, e.textureId);
@@ -102,23 +129,39 @@ public class GameRenderer implements GLEventListener, ActionListener {
             }
         }
 
-        // Ghosts
+        // Ghosts: independent random wandering with periodic turns
         for (Ghost g : map.ghosts) {
-            // gate logic example
-            if (g.y == tileSize * 9 && g.direction != 'U' && g.direction != 'D') {
-                g.updateDirection('U');
-            }
+            // Remove gate-forcing logic; it can sync ghosts:
+            // if (g.y == tileSize * 9 && g.direction != 'U' && g.direction != 'D') {
+            //     g.updateDirection('U');
+            // }
+
+            // Move
             g.x += g.velocityX;
             g.y += g.velocityY;
+
+            boolean hitWall = false;
             for (Entity wall : map.walls) {
-                if (collision(g, wall) || g.x <= 0 || g.x + g.width >= boardWidth) {
+                if (collision(g, wall) || g.x <= 0 || g.y <= 0 ||
+                        g.x + g.width >= boardWidth || g.y + g.height >= boardHeight) {
+                    // Undo and choose a new direction
                     g.x -= g.velocityX;
                     g.y -= g.velocityY;
-                    g.randomizeDirection();
+                    hitWall = true;
+                    break;
                 }
             }
 
-            // Hit pacman
+            if (hitWall) {
+                g.randomizeDirection();
+                // Continue after picking a new direction to avoid double moves this frame
+            } else {
+                // Not blocked: let ghosts turn on timers and at intersections
+                g.tickTurnTimer();
+                g.maybeTurnAtIntersection(tileSize);
+            }
+
+            // Collision with Pacman
             if (collision(g, map.pacman)) {
                 lives--;
                 if (lives <= 0) {
@@ -146,7 +189,6 @@ public class GameRenderer implements GLEventListener, ActionListener {
             resetPositions();
         }
     }
-
 
 
 

@@ -5,10 +5,20 @@ import java.io.IOException;
 
 public class TextureManager {
     private final String assetsFolder = "assets";
-    private final String[] textureNames = {
-            "wall.png", "blueGhost.png", "orangeGhost.png", "pinkGhost.png", "redGhost.png",
-            "pacmanUp.png", "pacmanDown.png", "pacmanLeft.png", "pacmanRight.png"
+    String[] textureNames = {
+            "wall.png",         // 0
+            "blueGhost.png",    // 1
+            "orangeGhost.png",  // 2
+            "pinkGhost.png",    // 3
+            "redGhost.png",     // 4
+            "pacmanDown.png",   // 5
+            "pacmanUp.png",     // 6
+            "pacmanLeft.png",   // 7
+            "pacmanRight.png" ,  // 8
+            "heart2.png"     ,  //9
+            "score.png"
     };
+
 
     public int[] textureIDs;            // GL texture handles
     public TextureReader.Texture[] textures; // raw texture data
@@ -50,8 +60,9 @@ public class TextureManager {
     public int getOrangeGhostTex(){ return textureIDs[2]; }
     public int getPinkGhostTex()  { return textureIDs[3]; }
     public int getRedGhostTex()   { return textureIDs[4]; }
-    public int getPacUpTex()      { return textureIDs[5]; }
-    public int getPacDownTex()    { return textureIDs[6]; }
-    public int getPacLeftTex()    { return textureIDs[7]; }
-    public int getPacRightTex()   { return textureIDs[8]; }
+    public int getPacUpTex()    { return textureIDs[5]; }
+    public int getPacDownTex()  { return textureIDs[6]; }
+    public int getPacLeftTex()  { return textureIDs[7]; }
+    public int getPacRightTex() { return textureIDs[8]; }
+    public int getHeartTex()      { return textureIDs[9]; }
 }

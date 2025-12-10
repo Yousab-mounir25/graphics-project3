@@ -1,4 +1,5 @@
 import java.util.HashSet;
+import java.util.List;
 
 public class GameMap {
     public HashSet<Entity> walls = new HashSet<>();
@@ -30,6 +31,7 @@ public class GameMap {
             "X                 X",
             "XXXXXXXXXXXXXXXXXXX"
     };
+
 
     public GameMap(int tileSize, TextureManager tm) {
         this.tileSize = tileSize;
@@ -74,5 +76,14 @@ public class GameMap {
                 }
             }
         }
+        for (Ghost ghost : ghosts) {
+            ghost.randomizeDirection(); // ensures all ghosts start moving
+        }
+
     }
+    public List<Entity> getWalls() {
+        return (List<Entity>) walls;
+    }
+
+
 }
