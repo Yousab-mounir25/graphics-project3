@@ -26,6 +26,8 @@ public class GameRenderer implements GLEventListener, ActionListener {
     private final Random random = new Random();
     private int lives = 3;
     private GLUT glut = new GLUT();
+    private MusicPlayer music;
+
 
 
     public GameRenderer(TextureManager tm) {
@@ -48,6 +50,8 @@ public class GameRenderer implements GLEventListener, ActionListener {
         gl.glMatrixMode(GL.GL_MODELVIEW);
         gl.glLoadIdentity();
 
+
+
         tm.init(gl);
         map = new GameMap(tileSize, tm);
 
@@ -57,6 +61,8 @@ public class GameRenderer implements GLEventListener, ActionListener {
         }
 
         gameLoop.start();
+        music = new MusicPlayer();
+        music.playBackground(); // loop background music
     }
 
     @Override
@@ -107,6 +113,13 @@ public class GameRenderer implements GLEventListener, ActionListener {
         gl.glTexCoord2f(1, 1); gl.glVertex2f(x + w, y + h);
         gl.glTexCoord2f(0, 1); gl.glVertex2f(x, y + h);
         gl.glEnd();
+    }
+    public void toggleMute() {
+        if (music != null) {
+            boolean current = music.isMuted();
+            music.setMuted(!current);
+            System.out.println("Sound " + (current ? "unmuted" : "muted"));
+        }
     }
 
 
@@ -177,6 +190,7 @@ public class GameRenderer implements GLEventListener, ActionListener {
             // Collision with Pacman
             if (collision(g, map.pacman)) {
                 lives--;
+                music.playGhost();
                 if (lives <= 0) {
                     gameOver = true;
                     return;
@@ -191,6 +205,7 @@ public class GameRenderer implements GLEventListener, ActionListener {
             if (collision(map.pacman, f)) {
                 eaten = f;
                 score += 10;
+                music.playFruit();
                 break;
             }
         }
@@ -201,6 +216,10 @@ public class GameRenderer implements GLEventListener, ActionListener {
             map = new GameMap(tileSize, tm);
             resetPositions();
         }
+        if (gameOver) {
+            music.stopBackground();
+        }
+
     }
 
 

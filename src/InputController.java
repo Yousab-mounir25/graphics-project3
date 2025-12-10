@@ -20,5 +20,10 @@ public class InputController extends KeyAdapter {
             renderer.onDirection('L');
         } else if (key == KeyEvent.VK_RIGHT) {
             renderer.onDirection('R');
-        }    }
+        }
+        if (key == KeyEvent.VK_M) { // M for mute
+            renderer.toggleMute();
+        }
+
+    }
 }
