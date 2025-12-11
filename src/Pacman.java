@@ -28,16 +28,10 @@ public class Pacman extends Entity {
 
     }
 }
+
+
+
 /// //Ghost class
-
-
-
-
-
-
-
-
-
 
      class Ghost extends Entity {
     private final Random random;

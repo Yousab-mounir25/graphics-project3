@@ -26,4 +26,5 @@ public class InputController extends KeyAdapter {
         }
 
     }
+
 }

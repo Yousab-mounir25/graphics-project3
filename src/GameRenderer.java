@@ -6,7 +6,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
 import java.util.Random;
-
 import java.awt.Font;
 
 
@@ -27,6 +26,8 @@ public class GameRenderer implements GLEventListener, ActionListener {
     private int lives = 3;
     private GLUT glut = new GLUT();
     private MusicPlayer music;
+    private Entity speakerIcon;
+
 
 
 
@@ -49,18 +50,17 @@ public class GameRenderer implements GLEventListener, ActionListener {
         glu.gluOrtho2D(0, boardWidth, boardHeight, 0);
         gl.glMatrixMode(GL.GL_MODELVIEW);
         gl.glLoadIdentity();
-
-
-
         tm.init(gl);
         map = new GameMap(tileSize, tm);
-
         // Randomize ghost initial directions
         for (Ghost g : map.ghosts) {
             g.updateDirection(directions[random.nextInt(4)]);
         }
 
         gameLoop.start();
+        speakerIcon = new Entity(
+                tm.getSpeakerTex(), boardWidth - 40, 10, 25, 25, tileSize
+        );
         music = new MusicPlayer();
         music.playBackground(); // loop background music
     }
@@ -84,9 +84,12 @@ public class GameRenderer implements GLEventListener, ActionListener {
         if (map.pacman != null) drawEntity(gl, map.pacman);
         //draw heart
         drawHUD(gl);
+        drawEntity(gl, speakerIcon);
+
 
     }
-    //draw heart
+
+    //draw heart and score
     private void drawHUD(GL gl) {
         int x = 10;
         int y = boardHeight - 30; // top-left
@@ -94,11 +97,10 @@ public class GameRenderer implements GLEventListener, ActionListener {
             gl.glBindTexture(GL.GL_TEXTURE_2D, tm.getHeartTex());
             drawQuad(gl, x, y, 25, 25);
             x += 30; // spacing
-
             gl.glDisable(GL.GL_TEXTURE_2D); // disable textures for text
-//            gl.glColor3f(1.0f, 1.0f, 0.0f); // yellow text
-            gl.glRasterPos2i(10, 20);       // position near top-left
 
+
+            gl.glRasterPos2i(10, 20);       // position near top-left
             String scoreText = "Score: " + score;
             for (char c : scoreText.toCharArray()) {
                 glut.glutBitmapCharacter(GLUT.BITMAP_HELVETICA_18, c);
@@ -114,6 +116,17 @@ public class GameRenderer implements GLEventListener, ActionListener {
         gl.glTexCoord2f(0, 1); gl.glVertex2f(x, y + h);
         gl.glEnd();
     }
+
+    //handle mouse click for mute and unmute
+    public void onMouseClick(int mouseX, int mouseY) {
+        // Check if click is inside speaker icon bounds
+        if (mouseX >= speakerIcon.x && mouseX <= speakerIcon.x + speakerIcon.width &&
+                mouseY >= speakerIcon.y && mouseY <= speakerIcon.y + speakerIcon.height) {
+
+            toggleMute(); // flip mute state
+        }
+    }
+    //toggleMute
     public void toggleMute() {
         if (music != null) {
             boolean current = music.isMuted();
@@ -121,8 +134,6 @@ public class GameRenderer implements GLEventListener, ActionListener {
             System.out.println("Sound " + (current ? "unmuted" : "muted"));
         }
     }
-
-
 
     private void drawEntity(GL gl, Entity e) {
         gl.glBindTexture(GL.GL_TEXTURE_2D, e.textureId);
@@ -143,7 +154,6 @@ public class GameRenderer implements GLEventListener, ActionListener {
 
     private void move() {
         if (gameOver || map.pacman == null) return;
-
         // Pacman movement and wall collisions
         map.pacman.x += map.pacman.velocityX;
         map.pacman.y += map.pacman.velocityY;
@@ -157,11 +167,6 @@ public class GameRenderer implements GLEventListener, ActionListener {
 
         // Ghosts: independent random wandering with periodic turns
         for (Ghost g : map.ghosts) {
-            // Remove gate-forcing logic; it can sync ghosts:
-            // if (g.y == tileSize * 9 && g.direction != 'U' && g.direction != 'D') {
-            //     g.updateDirection('U');
-            // }
-
             // Move
             g.x += g.velocityX;
             g.y += g.velocityY;
@@ -180,9 +185,7 @@ public class GameRenderer implements GLEventListener, ActionListener {
 
             if (hitWall) {
                 g.randomizeDirection();
-                // Continue after picking a new direction to avoid double moves this frame
             } else {
-                // Not blocked: let ghosts turn on timers and at intersections
                 g.tickTurnTimer();
                 g.maybeTurnAtIntersection(tileSize);
             }
@@ -252,7 +255,6 @@ public class GameRenderer implements GLEventListener, ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         move();
-        // The GLCanvas will repaint automatically via animator or AWT event queue.
     }
 
     // Expose simple controls to update pacman direction
