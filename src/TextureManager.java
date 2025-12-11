@@ -15,9 +15,7 @@ public class TextureManager {
             "pacmanUp.png",     // 6
             "pacmanLeft.png",   // 7
             "pacmanRight.png" ,  // 8
-            "heart2.png"     ,  //9
-            "score.png",
-            "speaker.png"
+            "heart2.png"     //9
     };
 
 
@@ -66,5 +64,5 @@ public class TextureManager {
     public int getPacLeftTex()  { return textureIDs[7]; }
     public int getPacRightTex() { return textureIDs[8]; }
     public int getHeartTex()      { return textureIDs[9]; }
-    public int getSpeakerTex()      { return textureIDs[11]; }
+    public int getSpeakerTex()      { return textureIDs[10]; }
 }
