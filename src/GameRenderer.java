@@ -91,23 +91,30 @@ public class GameRenderer implements GLEventListener, ActionListener {
 
     //draw heart and score
     private void drawHUD(GL gl) {
+        // Draw hearts at top-left
         int x = 10;
-        int y = boardHeight - 30; // top-left
+        int y = 10; // top-left corner
         for (int i = 0; i < lives; i++) {
             gl.glBindTexture(GL.GL_TEXTURE_2D, tm.getHeartTex());
             drawQuad(gl, x, y, 25, 25);
-            x += 30; // spacing
-            gl.glDisable(GL.GL_TEXTURE_2D); // disable textures for text
-
-
-            gl.glRasterPos2i(10, 20);       // position near top-left
-            String scoreText = "Score: " + score;
-            for (char c : scoreText.toCharArray()) {
-                glut.glutBitmapCharacter(GLUT.BITMAP_HELVETICA_18, c);
-            }
-            gl.glEnable(GL.GL_TEXTURE_2D);
+            x += 30; // spacing between hearts
         }
+
+        // Draw score text at top-right
+        gl.glDisable(GL.GL_TEXTURE_2D); // disable textures for text
+        String scoreText = "Score: " + score;
+
+        // Position near top-right corner
+        int textX = boardWidth - 120; // adjust offset so text fits inside
+        int textY = 30;
+        gl.glRasterPos2i(textX, textY);
+
+        for (char c : scoreText.toCharArray()) {
+            glut.glutBitmapCharacter(GLUT.BITMAP_HELVETICA_18, c);
+        }
+        gl.glEnable(GL.GL_TEXTURE_2D); // re-enable textures
     }
+
     private void drawQuad(GL gl, int x, int y, int w, int h) {
         gl.glBegin(GL.GL_QUADS);
         gl.glTexCoord2f(0, 0); gl.glVertex2f(x, y);
